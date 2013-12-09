@@ -1,8 +1,9 @@
 InsultBot
 =========
 
-A simple Python IRC bot that insults its users.
+A simple Ruby IRC bot that insults its users.
 
 ##Requirements
 
-oyoyo irc library @ [code.google.com](https://code.google.com/p/oyoyo/) (Modified to support SSL)
+Ruby >= 1.9.0
+Cinch IRC libaray @ [github.com](https://github.com/cinchrb/cinch)
