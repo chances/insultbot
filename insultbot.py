@@ -183,17 +183,17 @@ class EnigmaBotHandler(DefaultCommandHandler):
         if msg.find('!' + NICK + ' insult ') != -1:
             to = msg.split('insult ')[1]
             if to.find(NICK) != -1:
-                self.insult(to)
+                self.insult(to, False)
             else:
-                self.insult(nick)
+                self.insult(nick. False)
             return
         
         if msg.find('insult: ') != -1:
             to = msg.split(' ')[1]
             if to.find(NICK) != -1:
-                self.insult(to)
+                self.insult(to, False)
             else:
-                self.insult(nick)
+                self.insult(nick, False)
             return
 
         if msg.find(NICK) != -1 and msg.find('!' + NICK) == -1:
