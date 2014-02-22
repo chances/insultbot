@@ -27,7 +27,7 @@ insultbot = Cinch::Bot.new do
     c.nick = 'insultbot'
     c.realname = 'Enigma\'s InsultBot'
     #TODO: Re-add channel config file
-    if ARGV.include?('--debug')
+		if ARGV.include?('--debug')
 			c.channels = ['#insultbot']
 		else
 	    c.channels = ['#insultbot', '#gnarwals catsonly', '#swearingparlour']
@@ -55,7 +55,7 @@ insultbot = Cinch::Bot.new do
       end
     end
     
-    def insult(to)
+		def insult(to)
       #Get an insult
       service = @services.sample
       insult = nil
@@ -73,13 +73,13 @@ insultbot = Cinch::Bot.new do
       end
       
       #Insult the user
-      if not insult == nil
+			if not insult == nil
 	      info "Insulting #{to}"
-  	    if insult.include? '<NICK>'
+				if insult.include? '<NICK>'
     	    insult.gsub('<NICK>', to)
 				else
       	  "Hey #{to}! #{insult}"
-      	end
+				end
 			else
 				info "ERROR: Failed to retrieve an insult"
 			end
@@ -104,7 +104,11 @@ insultbot = Cinch::Bot.new do
       m.reply(@help)
     when /(greet|insult)/
       if args != m.bot.nick
-        m.reply insult(args)
+				if args == 'me'
+					m.reply insult(from)
+				else
+	        m.reply insult(args)
+				end
       else
         m.reply insult(from)
       end
