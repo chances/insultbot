@@ -13,10 +13,10 @@ require 'nokogiri'
 
 @debug = false
 if ARGV.length > 0
-	if ARGV.include?('--debug')
-		@debug = true
-		puts 'DEBUG MODE'
-	end
+  if ARGV.include?('--debug')
+    @debug = true
+    puts 'DEBUG MODE'
+  end
 end
 
 insultbot = Cinch::Bot.new do
@@ -27,11 +27,11 @@ insultbot = Cinch::Bot.new do
     c.nick = 'insultbot'
     c.realname = 'Enigma\'s InsultBot'
     #TODO: Re-add channel config file
-		if ARGV.include?('--debug')
-			c.channels = ['#insultbot']
-		else
-	    c.channels = ['#insultbot', '#gnarwals catsonly', '#swearingparlour']
-		end
+    if ARGV.include?('--debug')
+      c.channels = ['#insultbot']
+    else
+      c.channels = ['#insultbot', '#gnarwals catsonly', '#swearingparlour']
+    end
     c.messages_per_second = 20
     c.plugins.plugins = [Cinch::Plugins::Identify]
     c.plugins.options[Cinch::Plugins::Identify] = {
@@ -55,7 +55,7 @@ insultbot = Cinch::Bot.new do
       end
     end
     
-		def insult(to)
+    def insult(to)
       #Get an insult
       service = @services.sample
       insult = nil
@@ -73,17 +73,17 @@ insultbot = Cinch::Bot.new do
       end
       
       #Insult the user
-			if not insult == nil
-	      info "Insulting #{to}"
-				if insult.include? '<NICK>'
-    	    insult.gsub('<NICK>', to)
-				else
-      	  "Hey #{to}! #{insult}"
-				end
-			else
-				info "ERROR: Failed to retrieve an insult"
-			end
-		end
+      if not insult == nil
+        info "Insulting #{to}"
+        if insult.include? '<NICK>'
+          insult.gsub('<NICK>', to)
+        else
+          "Hey #{to}! #{insult}"
+        end
+      else
+        info "ERROR: Failed to retrieve an insult"
+      end
+    end
   end
   
   on :connect do |m|
@@ -104,11 +104,11 @@ insultbot = Cinch::Bot.new do
       m.reply(@help)
     when /(greet|insult)/
       if args != m.bot.nick
-				if args == 'me'
-					m.reply insult(from)
-				else
-	        m.reply insult(args)
-				end
+        if args == 'me'
+          m.reply insult(from)
+        else
+          m.reply insult(args)
+        end
       else
         m.reply insult(from)
       end
@@ -169,8 +169,8 @@ log_file.puts DateTime.now.strftime('%a, %b %d, %Y - %I:%M:%S %p')
 log_file.puts '------------------------------------------------'
 
 if @debug
-	log_file.puts 'DEBUG MODE'
-	log_file.puts '------------------------------------------------'
+  log_file.puts 'DEBUG MODE'
+  log_file.puts '------------------------------------------------'
 end
 
 insultbot.start
