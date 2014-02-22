@@ -6,10 +6,18 @@
 ########################################################
 
 require 'cinch'
-#require 'cinch/plugins/identify'
+require 'cinch/plugins/identify'
 require 'date'
 require 'open-uri'
 require 'nokogiri'
+
+@debug = false
+if ARGV.length > 0
+	if ARGV.include?('--debug')
+		@debug = true
+		puts 'DEBUG MODE'
+	end
+end
 
 insultbot = Cinch::Bot.new do
   configure do |c|
@@ -19,20 +27,27 @@ insultbot = Cinch::Bot.new do
     c.nick = 'insultbot'
     c.realname = 'Enigma\'s InsultBot'
     #TODO: Re-add channel config file
-    c.channels = ['#insultbot', '#gnarwals catsonly', '#swearingparlour']
+    if ARGV.include?('--debug')
+			c.channels = ['#insultbot']
+		else
+	    c.channels = ['#insultbot', '#gnarwals catsonly', '#swearingparlour']
+		end
     c.messages_per_second = 20
-    #c.plugins = [Cinch::Plugins::Identify]
-    #c.plugins.options = {
-    #  :password => 'TODO',
-    #  :type => :nickserv
-    #}
+    c.plugins.plugins = [Cinch::Plugins::Identify]
+    c.plugins.options[Cinch::Plugins::Identify] = {
+      :password => 'insultbotiscool',
+      :type => :nickserv
+    }
   end
   
   helpers do
     @help = 'See http://web.cecs.pdx.edu/~chances/insults/help'
     @thanks = ['Thanks!', 'Much obliged.', 'Cheers!', 'Thank you.', 'Cool karma.']
     @minus = ['What gives?', 'That was uncalled for!', 'Not cool.', 'Was it something I said?']
-    @services = ['http://www.randominsults.net/']
+    @services = [
+      'http://www.randominsults.net/',
+      'http://web.cecs.pdx.edu/~chances/insults/insult/random?format=text'
+    ]
     
     def help(user)
       for line in @help.split('\n')
@@ -48,19 +63,27 @@ insultbot = Cinch::Bot.new do
       when @services[0] #Random Insults.net
         page = Nokogiri::HTML(open(service))
         insult = page.css('i').first.text
+      #when @services[1] #InsultBot Suggestions
+      #  open(service) do |file|
+      #    insult = file.read
+      #  end
       else
         page = Nokogiri::HTML(open(@services[0]))
         insult = page.css('i').first.text
       end
       
       #Insult the user
-      info "Insulting #{to}"
-      if insult.include? '<NICK>'
-        insult.gsub('<NICK>', to)
-      else
-        "Hey #{to}! #{insult}"
-      end
-    end
+      if not insult == nil
+	      info "Insulting #{to}"
+  	    if insult.include? '<NICK>'
+    	    insult.gsub('<NICK>', to)
+				else
+      	  "Hey #{to}! #{insult}"
+      	end
+			else
+				info "ERROR: Failed to retrieve an insult"
+			end
+		end
   end
   
   on :connect do |m|
@@ -140,5 +163,10 @@ insultbot.loggers.first.level  = :info
 log_file.puts '================================================'
 log_file.puts DateTime.now.strftime('%a, %b %d, %Y - %I:%M:%S %p')
 log_file.puts '------------------------------------------------'
+
+if @debug
+	log_file.puts 'DEBUG MODE'
+	log_file.puts '------------------------------------------------'
+end
 
 insultbot.start
