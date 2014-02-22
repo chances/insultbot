@@ -1,7 +1,8 @@
 InsultBot
 =========
 
-A simple Ruby IRC bot that insults its users.
+A simple Ruby IRC bot that insults its users with insults retrieved
+from various web services.
 
 ##Requirements
 
