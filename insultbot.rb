@@ -46,6 +46,7 @@ insultbot = Cinch::Bot.new do
     @minus = ['What gives?', 'That was uncalled for!', 'Not cool.', 'Was it something I said?']
     @services = [
       'http://www.randominsults.net/',
+      'http://programmerinsults.com/',
       'http://web.cecs.pdx.edu/~chances/insults/insult/random?format=text'
     ]
     
@@ -63,10 +64,13 @@ insultbot = Cinch::Bot.new do
       when @services[0] #Random Insults.net
         page = Nokogiri::HTML(open(service))
         insult = page.css('i').first.text
-      #when @services[1] #InsultBot Suggestions
-      #  open(service) do |file|
-      #    insult = file.read
-      #  end
+      when @services[1] #Programmer Insults.com
+        page = Nokogiri::HTML(open(service))
+        insult = page.css('a').first.text
+      when @services[2] #InsultBot Suggestions
+        open(service) do |file|
+          insult = file.read
+        end
       else
         page = Nokogiri::HTML(open(@services[0]))
         insult = page.css('i').first.text
