@@ -88,6 +88,38 @@ insultbot = Cinch::Bot.new do
         info "ERROR: Failed to retrieve an insult"
       end
     end
+
+    def handle_command(m, command, args)
+      from = m.user.nick
+      case command
+      when /help/
+        m.reply(@help)
+      when /(greet|insult)/
+        if not args.include?(m.bot.nick)
+          if args == 'me'
+            m.reply insult(from)
+          else
+            m.reply insult(args)
+          end
+        else
+          m.reply insult(from)
+        end
+      when /leave/
+        if from == 'enigma'
+          m.reply insult(from)
+          info "Leaving #{m.channel}"
+          m.bot.part(m.channel)
+        end
+      when /quit/
+        if from == 'enigma'
+          m.reply insult(from)
+          info 'Quitting IRC'
+          m.bot.quit('Quitting at the request of my master')
+        end
+      else
+        m.reply "[Error] #{insult(from)}"
+      end
+    end
   end
   
   on :connect do |m|
@@ -102,37 +134,15 @@ insultbot = Cinch::Bot.new do
     m.reply(@help)
   end
   on :channel, /^!insultbot (\w+)\s*(.*)/ do |m, command, args|
-    from = m.user.nick
-    case command
-    when /help/
-      m.reply(@help)
-    when /(greet|insult)/
-      if not args.include?(m.bot.nick)
-        if args == 'me'
-          m.reply insult(from)
-        else
-          m.reply insult(args)
-        end
-      else
-        m.reply insult(from)
-      end
-    when /leave/
-      if from == 'enigma'
-        m.reply insult(from)
-        info "Leaving #{m.channel}"
-        m.bot.part(m.channel)
-      end
-    when /quit/
-      if from == 'enigma'
-        m.reply insult(from)
-        info 'Quitting IRC'
-        m.bot.quit('Quitting at the request of my master')
-      end
-    else
-      m.reply "[Error] #{insult(from)}"
-    end
+   handle_command(m, command, args)
   end
-  on :channel, /^insult: (.+)/ do |m, who|
+  on :channel, /^insultbot: (\w+)\s*(.*)/ do |m, command, args|
+   handle_command(m, command, args)
+  end
+  on :private, /^(\w+)\s*(.*)/ do |m, command, args|
+   handle_command(m, command, args)
+  end
+  on :message, /^insult: (.+)/ do |m, who|
     if who == 'me'
       m.reply insult(m.user.nick)
     elsif not who.include?(m.bot.nick)
@@ -141,10 +151,10 @@ insultbot = Cinch::Bot.new do
       m.reply insult(m.user.nick)
     end
   end
-  on :channel, /(insultbot|InsultBot)/ do |m|
+  on :message, /(insultbot|InsultBot)/ do |m|
     from = m.user.nick
     return if from == m.bot.nick
-    unless m.message.match /^(!insultbot.*|!help insultbot|insult: .*|infoobot: .*)/
+    unless m.message.match /^(!insultbot.*|insultbot: .*|!help insultbot|insult: .*|infoobot: .*)/
       if m.message.match /(insultbot|InsultBot)\+\+/
         m.reply "#{from}: #{@thanks.sample}"
       elsif m.message.match /(insultbot|InsultBot)--/
