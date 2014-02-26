@@ -154,10 +154,10 @@ insultbot = Cinch::Bot.new do
   on :message, /(insultbot|InsultBot)/ do |m|
     from = m.user.nick
     return if from == m.bot.nick
-    unless m.message.match /^(!insultbot.*|insultbot: .*|!help insultbot|insult: .*|infoobot: .*)/
-      if m.message.match /(insultbot|InsultBot)\+\+/
+    unless m.message.match(/^(!insultbot.*|insultbot: .*|!help insultbot|insult: .*|infoobot: .*)/)
+      if m.message.match(/(insultbot|InsultBot)\+\+/)
         m.reply "#{from}: #{@thanks.sample}"
-      elsif m.message.match /(insultbot|InsultBot)--/
+      elsif m.message.match(/(insultbot|InsultBot)--/)
         m.reply "#{from}: #{@minus.sample}"
       else
         #TODO: Make some insults actions.
