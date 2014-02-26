@@ -95,7 +95,7 @@ insultbot = Cinch::Bot.new do
       when /help/
         m.reply(@help)
       when /(greet|insult)/
-        if not args.include?(m.bot.nick)
+        if not args.include?(m.bot.nick) and args.length > 0
           if args == 'me'
             m.reply insult(from)
           else
