@@ -7,6 +7,7 @@
 
 require 'cinch'
 require 'cinch/plugins/identify'
+require 'yaml'
 require 'date'
 require 'open-uri'
 require 'nokogiri'
@@ -19,25 +20,52 @@ if ARGV.length > 0
   end
 end
 
+@channels = nil
+@debug_channels = nil
+
 insultbot = Cinch::Bot.new do
   configure do |c|
+    #Load configuration
+    config = {}
+    if File.exists?(File.expand_path('~/.bots/insultbot.yml'))
+      config = YAML::load_file(File.expand_path('~/.bots/insultbot.yml'))
+    end
+    
+    if not config.has_key?('channels')
+      @channels = ['#insultbot']
+    else
+      @channels = config['channels']
+      if not @channels.is_a?(Array) or config['channels'].length == 0
+        @channels = ['#insultbot']
+      end
+    end
+    if not config.has_key?('debug') or not config['debug'].has_key?['channels']
+      @channels = ['#insultbot']
+    else
+      @debug_channels = config['debug']['channels']
+      if not @debug_channels.is_a?(Array) or config['debug']['channels'].length == 0
+        @debug_channels = ['#insultbot']
+      end
+    end
+    #Configure bot
     c.server = 'iss.cat.pdx.edu'
     c.port = 6697
     c.ssl.use = true
     c.nick = 'insultbot'
     c.realname = 'Enigma\'s InsultBot'
-    #TODO: Re-add channel config file
     if ARGV.include?('--debug')
-      c.channels = ['#insultbot']
+      c.channels = @debug_channels
     else
-      c.channels = ['#insultbot', '#gnarwals catsonly', '#swearingparlour']
+      c.channels = @channels
     end
     c.messages_per_second = 20
-    c.plugins.plugins = [Cinch::Plugins::Identify]
-    c.plugins.options[Cinch::Plugins::Identify] = {
-      :password => 'insultbotiscool',
-      :type => :nickserv
-    }
+    if config.has_key?('nickserv') and config['nickserv'].has_key?['password']
+      c.plugins.plugins = [Cinch::Plugins::Identify]
+      c.plugins.options[Cinch::Plugins::Identify] = {
+        :password => config['nickserv']['password'],
+        :type => :nickserv
+      }
+    end
   end
   
   helpers do
